@@ -43,6 +43,8 @@ public class SdkTest extends UiAutomatorTestCase {
     private static final String ACTIVITY_NAME_CONTACTS = "";
     private static final String ACTIVITY_NAME_SMS = "";
     private static final String ACTIVITY_NAME_BROWSER = "";
+    private static final String ACTIVITY_NAME_WEATHER = "";
+    private static final String ACTIVITY_NAME_NOTES = "";
 
     @Override
     protected void setUp() throws Exception {
@@ -167,7 +169,15 @@ public class SdkTest extends UiAutomatorTestCase {
     }
 
     public void test016_Browser() {
-        launchApp(ACTIVITY_NAME_SMS);
+        launchApp(ACTIVITY_NAME_BROWSER);
+    }
+
+    public void test017_Weather() {
+        launchApp(ACTIVITY_NAME_WEATHER);
+    }
+
+    public void test018_Notes() {
+        launchApp(ACTIVITY_NAME_NOTES);
     }
 
     @Override
