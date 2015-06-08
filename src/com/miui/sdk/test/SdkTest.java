@@ -8,7 +8,10 @@ package com.miui.sdk.test;
  */
 
 import android.os.RemoteException;
-import com.android.uiautomator.core.*;
+import com.android.uiautomator.core.UiDevice;
+import com.android.uiautomator.core.UiObject;
+import com.android.uiautomator.core.UiObjectNotFoundException;
+import com.android.uiautomator.core.UiSelector;
 import com.android.uiautomator.testrunner.UiAutomatorTestCase;
 
 import java.io.IOException;
@@ -31,10 +34,24 @@ public class SdkTest extends UiAutomatorTestCase {
     private static final String PACKAGE_NAME_KEYGUARD = "com.android.keyguard";
     private static final String PACKAGE_NAME_SETTINGS = "com.android.settings";
     private static final String PACKAGE_NAME_CAMERA = "com.android.camera";
+    private static final String PACKAGE_NAME_GALLERY = "com.miui.gallery";
+    private static final String PACKAGE_NAME_MUSIC = "com.miui.music";
+    private static final String PACKAGE_NAME_THEME = "com.miui.theme";
+    private static final String PACKAGE_NAME_APP_MARKET = "com.miui.market";
+    private static final String PACKAGE_NAME_MAIL = "com.android.mail";
+    private static final String PACKAGE_NAME_UPDATER = "com.miui.updater";
+    private static final String PACKAGE_NAME_CLOCK = "com.miui.clock";
+    private static final String PACKAGE_NAME_SOUND_RECORDER = "com.android.soundrecorder";
+    private static final String PACKAGE_NAME_FM_RADIO = "com.android.fmradio";
+    private static final String PACKAGE_NAME_CALCULATOR = "com.android.calculator2";
+    private static final String PACKAGE_NAME_FILE_EXPLORER = "com.android.fileexplorer";
+    private static final String PACKAGE_NAME_COMPASS = "com.miui.compass";
+    private static final String PACKAGE_NAME_SECURITY_CENTRE = "com.android.security.centre";
     private static final String PACKAGE_NAME_CONTACTS = "com.android.contacts";
     private static final String PACKAGE_NAME_SMS = "com.android.sms";
-    private static final String PACKAGE_NAME_NOTES = "com.miui.notes";
+    private static final String PACKAGE_NAME_BROWSER = "com.android.browser";
     private static final String PACKAGE_NAME_WEATHER = "com.miui.weather";
+    private static final String PACKAGE_NAME_NOTES = "com.miui.notes";
 
     //    activity names
     private static final String ACTIVITY_NAME_SETTINGS = "";
@@ -60,6 +77,7 @@ public class SdkTest extends UiAutomatorTestCase {
 
     @Override
     protected void setUp() throws Exception {
+        debugMsg(String.format("methodName = %s", new Throwable().getStackTrace()[0].getMethodName()));
         super.setUp();
         if (uiDevice == null) {
             uiDevice = UiDevice.getInstance();
@@ -121,14 +139,14 @@ public class SdkTest extends UiAutomatorTestCase {
                 endY = mHeight / 4;
                 break;
         }
-        times = (times > 0) ? times : 1;
+        times = (times > 1) ? times : 1;
         for (int i = 0; i < times; i++) {
             uiDevice.drag(startX, startY, endX, endY, DRAG_STEPS);
         }
         waitFor(1);
     }
 
-    private void unlock() throws RemoteException {
+    private void unLock() throws RemoteException {
         int startX, startY, endX, endY;
         if (!uiDevice.isScreenOn()) {
             uiDevice.wakeUp();
@@ -220,34 +238,64 @@ public class SdkTest extends UiAutomatorTestCase {
 
     private String getConfirmButtonText(String packageName) {
         String confirmButtonText = "确定";
-        if (packageName.equals(PACKAGE_NAME_CAMERA)) {
-            confirmButtonText = "开始";
-        } else if (packageName.equals(PACKAGE_NAME_SETTINGS)) {
-            confirmButtonText = "";
+        switch (packageName) {
+            case PACKAGE_NAME_CAMERA:
+                confirmButtonText = "开始";
+                break;
+            case PACKAGE_NAME_SETTINGS:
+                confirmButtonText = "";
+                break;
+            case PACKAGE_NAME_CLOCK:
+                confirmButtonText = "舍弃";
+                break;
+            case PACKAGE_NAME_SOUND_RECORDER:
+                confirmButtonText = "确定";
+                break;
+            case PACKAGE_NAME_FM_RADIO:
+                confirmButtonText = "同意";
+                break;
+            case PACKAGE_NAME_COMPASS:
+                confirmButtonText = "同意";
+                break;
         }
         return confirmButtonText;
     }
 
     private String getCancelButtonText(String packageName) {
         String cancelButtonText = "取消";
-        if (packageName.equals(PACKAGE_NAME_CAMERA)) {
-            cancelButtonText = "开始";
-        } else if (packageName.equals(PACKAGE_NAME_SETTINGS)) {
-            cancelButtonText = "";
+        switch (packageName) {
+            case PACKAGE_NAME_CAMERA:
+                cancelButtonText = "开始";
+                break;
+            case PACKAGE_NAME_SETTINGS:
+                cancelButtonText = "";
+                break;
+            case PACKAGE_NAME_CLOCK:
+                cancelButtonText = "取消";
+                break;
+            case PACKAGE_NAME_SOUND_RECORDER:
+                cancelButtonText = "取消";
+                break;
+            case PACKAGE_NAME_FM_RADIO:
+                cancelButtonText = "拒绝";
+                break;
+            case PACKAGE_NAME_COMPASS:
+                cancelButtonText = "退出";
+                break;
         }
         return cancelButtonText;
     }
 
-    private void progressBar() {
+    private void waitingProgressBar(int waitingTime) {
         UiObject progressBar;
         int times = 0;
         while (true) {
             progressBar = new UiObject(new UiSelector().className("android.widget.ProgressBar"));
             if (progressBar.exists()) {
-                if (times >= 5) {
+                times += 1;
+                if (times >= waitingTime) {
                     break;
                 }
-                times += 1;
                 waitFor(1);
             } else {
                 break;
@@ -255,7 +303,7 @@ public class SdkTest extends UiAutomatorTestCase {
         }
     }
 
-    private void multiChoiseMode() throws UiObjectNotFoundException {
+    private void enterMultiChoiceMode() throws UiObjectNotFoundException {
         UiObject listView;
         listView = new UiObject(new UiSelector().className("android.widget.ListView"));
         int childCounts;
@@ -274,19 +322,18 @@ public class SdkTest extends UiAutomatorTestCase {
     }
 
     private void launchApp(String activityName) {
+        debugMsg(String.format("activityName = %s", activityName));
         uiDevice.pressHome();
         try {
             String sCommand = String.format("am start -n %s", activityName);
             Runtime.getRuntime().exec(sCommand).wait();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
         waitFor(2);
     }
 
-    private void clearRecentOpenApps() throws UiObjectNotFoundException, RemoteException {
+    private void clearOpenedApps() throws UiObjectNotFoundException, RemoteException {
         uiDevice.pressHome();
         uiDevice.pressRecentApps();
         waitFor(1);
@@ -298,7 +345,7 @@ public class SdkTest extends UiAutomatorTestCase {
     }
 
     public void test001_Camera() throws UiObjectNotFoundException {
-        debugMsg(String.format("testName = %s", new Throwable().getStackTrace()[0].getMethodName()));
+        debugMsg(String.format("methodName = %s", new Throwable().getStackTrace()[0].getMethodName()));
         launchApp(ACTIVITY_NAME_CAMERA);
         if (uiDevice.getCurrentPackageName().equals(PACKAGE_NAME_CAMERA)) {
             UiObject shutterButton;
@@ -310,62 +357,285 @@ public class SdkTest extends UiAutomatorTestCase {
 
     }
 
-    public void test002_Gallery() {
+    public void test002_Gallery() throws UiObjectNotFoundException {
+        debugMsg(String.format("methodName = %s", new Throwable().getStackTrace()[0].getMethodName()));
         launchApp(ACTIVITY_NAME_GALLERY);
+        if (uiDevice.getCurrentPackageName().equals(PACKAGE_NAME_GALLERY)) {
+            alertDialog(PACKAGE_NAME_GALLERY, true);
+        }
     }
 
-    public void test003_Music() {
+    public void test003_Music() throws UiObjectNotFoundException {
+        debugMsg(String.format("methodName = %s", new Throwable().getStackTrace()[0].getMethodName()));
         launchApp(ACTIVITY_NAME_MUSIC);
+        if (uiDevice.getCurrentPackageName().equals(PACKAGE_NAME_MUSIC)) {
+            alertDialog(PACKAGE_NAME_MUSIC, true);
+            UiObject onlineMusic, myMusic;
+            onlineMusic = new UiObject(new UiSelector().className("").textContains("音乐库"));
+            myMusic = new UiObject(new UiSelector().className("").textContains("我的音乐"));
+            onlineMusic.click();
+            waitFor(1);
+            waitingProgressBar(5);
+            myMusic.click();
+            waitFor(1);
+            UiObject search;
+            search = new UiObject(new UiSelector().className(""));
+            search.click();
+            waitFor(1);
+        }
     }
 
-    public void test004_Theme() {
+    public void test004_Theme() throws UiObjectNotFoundException {
+        debugMsg(String.format("methodName = %s", new Throwable().getStackTrace()[0].getMethodName()));
         launchApp(ACTIVITY_NAME_THEME);
+        if (uiDevice.getCurrentPackageName().equals(PACKAGE_NAME_THEME)) {
+            alertDialog(PACKAGE_NAME_THEME, true);
+            UiObject search;
+            search = new UiObject(new UiSelector().className(""));
+            search.click();
+            waitFor(1);
+        }
     }
 
-    public void test005_AppMarket() {
+    public void test005_AppMarket() throws UiObjectNotFoundException {
+        debugMsg(String.format("methodName = %s", new Throwable().getStackTrace()[0].getMethodName()));
         launchApp(ACTIVITY_NAME_APP_MARKET);
+        if (uiDevice.getCurrentPackageName().equals(PACKAGE_NAME_APP_MARKET)) {
+            alertDialog(PACKAGE_NAME_APP_MARKET, true);
+            UiObject competitive, ranking, assortment, myMarket;
+            competitive = new UiObject(new UiSelector().className("").textContains("精品"));
+            ranking = new UiObject(new UiSelector().className("").textContains("排行"));
+            assortment = new UiObject(new UiSelector().className("").textContains("分类"));
+            myMarket = new UiObject(new UiSelector().className("").textContains("我的"));
+            competitive.click();
+            waitFor(1);
+            ranking.click();
+            waitFor(1);
+            assortment.click();
+            waitFor(1);
+            myMarket.click();
+            waitFor(1);
+        }
     }
 
-    public void test006_Mail() {
+    public void test006_Mail() throws UiObjectNotFoundException {
+        debugMsg(String.format("methodName = %s", new Throwable().getStackTrace()[0].getMethodName()));
         launchApp(ACTIVITY_NAME_MAIL);
+        if (uiDevice.getCurrentPackageName().equals(PACKAGE_NAME_MAIL)) {
+            alertDialog(PACKAGE_NAME_MAIL, true);
+        }
     }
 
-    public void test007_Updater() {
+    public void test007_Updater() throws UiObjectNotFoundException {
+        debugMsg(String.format("methodName = %s", new Throwable().getStackTrace()[0].getMethodName()));
         launchApp(ACTIVITY_NAME_UPDATER);
+        if (uiDevice.getCurrentPackageName().equals(PACKAGE_NAME_UPDATER)) {
+            UiObject checkUpdate;
+            while (true) {
+                checkUpdate = new UiObject(new UiSelector().className(""));
+                if (!checkUpdate.exists()) {
+                    debugMsg("正在检查更新");
+                    waitFor(1);
+                } else {
+                    break;
+                }
+            }
+            checkUpdate.click();
+            while (true) {
+                checkUpdate = new UiObject(new UiSelector().className(""));
+                if (!checkUpdate.exists()) {
+                    debugMsg("正在检查更新");
+                    waitFor(1);
+                } else {
+                    break;
+                }
+            }
+            immersionMenu();
+            UiObject closeImmersionMenu;
+            closeImmersionMenu = new UiObject(new UiSelector().className(""));
+            closeImmersionMenu.click();
+            waitFor(1);
+            checkUpdate.click();
+        }
     }
 
-    public void test008_Clock() {
+    public void test008_Clock() throws UiObjectNotFoundException {
+        debugMsg(String.format("methodName = %s", new Throwable().getStackTrace()[0].getMethodName()));
         launchApp(ACTIVITY_NAME_CLOCK);
+        if (uiDevice.getCurrentPackageName().equals(PACKAGE_NAME_CLOCK)) {
+            UiObject alarmClock, clock, stopwatch, timer;
+            alarmClock = new UiObject(new UiSelector().className("").textContains("闹钟"));
+            clock = new UiObject(new UiSelector().className("").textContains("时钟"));
+            stopwatch = new UiObject(new UiSelector().className("").textContains("秒表"));
+            timer = new UiObject(new UiSelector().className("").textContains("计时器"));
+            clock.click();
+            waitFor(1);
+            stopwatch.click();
+            waitFor(1);
+            timer.click();
+            waitFor(1);
+            alarmClock.click();
+            waitFor(1);
+            UiObject addAlarmClock, clockSettings;
+            addAlarmClock = new UiObject(new UiSelector().className("").textContains("添加"));
+            clockSettings = new UiObject(new UiSelector().className("").textContains("设置"));
+            addAlarmClock.click();
+            waitFor(1);
+            UiObject cancel;
+            cancel = new UiObject(new UiSelector().className("").textContains("取消"));
+            cancel.click();
+            alertDialog(PACKAGE_NAME_CLOCK, true);
+            waitFor(1);
+            clockSettings.click();
+            waitFor(1);
+            uiDevice.pressBack();
+        }
     }
 
-    public void test008_SoundRecorder() {
+    public void test008_SoundRecorder() throws UiObjectNotFoundException {
+        debugMsg(String.format("methodName = %s", new Throwable().getStackTrace()[0].getMethodName()));
         launchApp(ACTIVITY_NAME_SOUND_RECORDER);
+        if (uiDevice.getCurrentPackageName().equals(PACKAGE_NAME_SOUND_RECORDER)) {
+            UiObject record;
+            record = new UiObject(new UiSelector().className(""));
+            record.click();
+            Random random;
+            random = new Random();
+            int rnd;
+            UiObject stop, pause, markpoint;
+            stop = new UiObject(new UiSelector().className(""));
+            pause = new UiObject(new UiSelector().className(""));
+            markpoint = new UiObject(new UiSelector().className(""));
+            for (int i = 0; i < 3; i++) {
+                markpoint.click();
+                rnd = random.nextInt(2);
+                waitFor(rnd);
+            }
+            pause.click();
+            waitFor(1);
+            stop.click();
+            waitFor(1);
+            alertDialog(PACKAGE_NAME_SOUND_RECORDER, true);
+        }
     }
 
-    public void test009_FMRadio() {
+    public void test009_FMRadio() throws UiObjectNotFoundException {
+        debugMsg(String.format("methodName = %s", new Throwable().getStackTrace()[0].getMethodName()));
+        turnOffWlan();
         launchApp(ACTIVITY_NAME_FM_RADIO);
+        if (uiDevice.getCurrentPackageName().equals(PACKAGE_NAME_FM_RADIO)) {
+            alertDialog(PACKAGE_NAME_FM_RADIO, true);
+            waitingProgressBar(10);
+            UiObject fmRadio;
+            fmRadio = new UiObject(new UiSelector().className(""));
+            fmRadio.click();
+            waitFor(1);
+            UiObject fmStationList;
+            fmStationList = new UiObject(new UiSelector().className(""));
+            fmStationList.click();
+            waitFor(1);
+            waitingProgressBar(20);
+            UiObject cancel;
+            cancel = new UiObject(new UiSelector().className(""));
+            if (cancel.exists()) {
+                cancel.click();
+                waitFor(1);
+            }
+            uiDevice.pressBack();
+            waitFor(1);
+            immersionMenu();
+            UiObject quit;
+            quit = new UiObject(new UiSelector().className(""));
+            quit.click();
+            waitFor(1);
+        }
     }
 
-    public void test010_Calculator() {
+    public void test010_Calculator() throws UiObjectNotFoundException {
+        debugMsg(String.format("methodName = %s", new Throwable().getStackTrace()[0].getMethodName()));
         launchApp(ACTIVITY_NAME_CALCULATOR);
+        if (uiDevice.getCurrentPackageName().equals(PACKAGE_NAME_CALCULATOR)) {
+            UiObject calculatorMode;
+            calculatorMode = new UiObject(new UiSelector().className(""));
+            UiObject panel;
+            int childCount;
+            Random random;
+            random = new Random();
+            int rnd;
+            UiObject calculatorButton;
+            panel = new UiObject(new UiSelector().className(""));
+            childCount = panel.getChildCount();
+            for (int i = 0; i < childCount; i++) {
+                rnd = random.nextInt(childCount);
+                calculatorButton = panel.getChild(new UiSelector().className("").index(rnd));
+                calculatorButton.click();
+            }
+            calculatorMode.click();
+            waitFor(1);
+            panel = new UiObject(new UiSelector().className(""));
+            childCount = panel.getChildCount();
+            for (int i = 0; i < childCount; i++) {
+                rnd = random.nextInt(childCount);
+                calculatorButton = panel.getChild(new UiSelector().className("").index(rnd));
+                calculatorButton.click();
+            }
+        }
     }
 
-    public void test011_FileExplorer() {
+    public void test011_FileExplorer() throws UiObjectNotFoundException {
+        debugMsg(String.format("methodName = %s", new Throwable().getStackTrace()[0].getMethodName()));
         launchApp(ACTIVITY_NAME_FILE_EXPLORER);
+        if (uiDevice.getCurrentPackageName().equals(PACKAGE_NAME_FILE_EXPLORER)) {
+            UiObject fileList;
+            fileList = new UiObject(new UiSelector().className(""));
+            fileList.click();
+            waitingProgressBar(5);
+            enterMultiChoiceMode();
+            UiObject cancel;
+            cancel = new UiObject(new UiSelector().className(""));
+            cancel.click();
+            waitFor(1);
+            immersionMenu();
+            UiObject closeImmersionMenu;
+            closeImmersionMenu = new UiObject(new UiSelector().className(""));
+            closeImmersionMenu.click();
+        }
     }
 
-    public void test012_Compass() {
+    public void test012_Compass() throws UiObjectNotFoundException {
+        debugMsg(String.format("methodName = %s", new Throwable().getStackTrace()[0].getMethodName()));
         launchApp(ACTIVITY_NAME_COMPASS);
+        if (uiDevice.getCurrentPackageName().equals(PACKAGE_NAME_COMPASS)) {
+            alertDialog(PACKAGE_NAME_COMPASS, true);
+            swipePhone(LEFT, 2);
+            swipePhone(RIGHT, 1);
+        }
     }
 
-    public void test013_SecurityCenter() {
+    public void test013_SecurityCenter() throws UiObjectNotFoundException {
+        debugMsg(String.format("methodName = %s", new Throwable().getStackTrace()[0].getMethodName()));
         launchApp(ACTIVITY_NAME_SECURITY_CENTRE);
+        if (uiDevice.getCurrentPackageName().equals(PACKAGE_NAME_SECURITY_CENTRE)) {
+            alertDialog(PACKAGE_NAME_SECURITY_CENTRE, true);
+        }
     }
 
     public void test014_Contacts() throws UiObjectNotFoundException {
+        debugMsg(String.format("methodName = %s", new Throwable().getStackTrace()[0].getMethodName()));
         launchApp(ACTIVITY_NAME_CONTACTS);
         if (uiDevice.getCurrentPackageName().equals(PACKAGE_NAME_CONTACTS)) {
-            swipePhone(RIGHT, 1);
+            UiObject dial, contacts, yellowPage;
+            dial = new UiObject(new UiSelector().className("").textContains("拨号"));
+            contacts = new UiObject(new UiSelector().className("").textContains("联系人"));
+            yellowPage = new UiObject(new UiSelector().className("").textContains("黄页"));
+            dial.click();
+            waitFor(1);
+            UiObject showDial;
+            showDial = new UiObject(new UiSelector().className("").textContains("拨号"));
+            if (showDial.exists()) {
+                showDial.click();
+                waitFor(1);
+            }
             UiObject diaPanel;
             diaPanel = new UiObject(new UiSelector().className(""));
             int childCounts;
@@ -378,27 +648,60 @@ public class SdkTest extends UiAutomatorTestCase {
                 diaButton = diaPanel.getChild(new UiSelector().className("").index(rnd));
                 diaButton.click();
             }
-            swipePhone(LEFT, 3);
+            contacts.click();
+            waitFor(1);
+            UiObject newContact;
+            newContact = new UiObject(new UiSelector().className(""));
+            newContact.click();
+            waitFor(1);
+            UiObject cancel;
+            cancel = new UiObject(new UiSelector().className("").textContains("取消"));
+            cancel.click();
+            waitFor(1);
             alertDialog(PACKAGE_NAME_CONTACTS, true);
-            progressBar();
+            yellowPage.click();
+            waitFor(1);
+            alertDialog(PACKAGE_NAME_CONTACTS, true);
+            waitingProgressBar(5);
         }
     }
 
     public void test015_SMS() throws UiObjectNotFoundException {
+        debugMsg(String.format("methodName = %s", new Throwable().getStackTrace()[0].getMethodName()));
         launchApp(ACTIVITY_NAME_SMS);
         if (uiDevice.getCurrentPackageName().equals(PACKAGE_NAME_SMS)) {
+            alertDialog(PACKAGE_NAME_SMS, true);
+            UiObject search;
+            search = new UiObject(new UiSelector().className(""));
+            search.click();
+            waitFor(1);
+            uiDevice.pressBack();
+            waitFor(1);
             UiObject newSMS;
-            newSMS = new UiObject(new UiSelector().className(""));
+            newSMS = new UiObject(new UiSelector().className("").textContains("写短信"));
             newSMS.click();
             waitFor(1);
+            uiDevice.pressBack();
         }
     }
 
-    public void test016_Browser() {
+    public void test016_Browser() throws UiObjectNotFoundException {
+        debugMsg(String.format("methodName = %s", new Throwable().getStackTrace()[0].getMethodName()));
         launchApp(ACTIVITY_NAME_BROWSER);
+        if (uiDevice.getCurrentPackageName().equals(PACKAGE_NAME_BROWSER)) {
+            alertDialog(PACKAGE_NAME_BROWSER, true);
+            UiObject more;
+            more = new UiObject(new UiSelector().className(""));
+            more.click();
+            waitFor(1);
+            UiObject quit;
+            quit = new UiObject(new UiSelector().className(""));
+            quit.click();
+        }
     }
 
     public void test017_Weather() throws UiObjectNotFoundException {
+        debugMsg(String.format("methodName = %s", new Throwable().getStackTrace()[0].getMethodName()));
         launchApp(ACTIVITY_NAME_WEATHER);
         if (uiDevice.getCurrentPackageName().equals(PACKAGE_NAME_WEATHER)) {
             immersionMenu();
@@ -406,6 +709,7 @@ public class SdkTest extends UiAutomatorTestCase {
     }
 
     public void test018_Notes() throws UiObjectNotFoundException {
+        debugMsg(String.format("methodName = %s", new Throwable().getStackTrace()[0].getMethodName()));
         launchApp(ACTIVITY_NAME_NOTES);
         if (uiDevice.getCurrentPackageName().equals(PACKAGE_NAME_NOTES)) {
             alertDialog(PACKAGE_NAME_NOTES, false);
@@ -425,7 +729,8 @@ public class SdkTest extends UiAutomatorTestCase {
 
     @Override
     protected void tearDown() throws Exception {
+        debugMsg(String.format("methodName = %s", new Throwable().getStackTrace()[0].getMethodName()));
         super.tearDown();
-        clearRecentOpenApps();
+        clearOpenedApps();
     }
 }
