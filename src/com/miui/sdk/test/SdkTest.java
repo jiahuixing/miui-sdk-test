@@ -29,11 +29,16 @@ public class SdkTest extends UiAutomatorTestCase {
 
     //    package names
     private static final String PACKAGE_NAME_KEYGUARD = "com.android.keyguard";
-    private static final String PACKAGE_NAME_SETTINGS = "";
+    private static final String PACKAGE_NAME_SETTINGS = "com.android.settings";
+    private static final String PACKAGE_NAME_CAMERA = "com.android.camera";
+    private static final String PACKAGE_NAME_CONTACTS = "com.android.contacts";
+    private static final String PACKAGE_NAME_SMS = "com.android.sms";
+    private static final String PACKAGE_NAME_NOTES = "com.miui.notes";
+    private static final String PACKAGE_NAME_WEATHER = "com.miui.weather";
 
     //    activity names
     private static final String ACTIVITY_NAME_SETTINGS = "";
-    private static final String ACTIVITY_NAME_CAMERA = "";
+    private static final String ACTIVITY_NAME_CAMERA = "com.android.camera/.Camera";
     private static final String ACTIVITY_NAME_GALLERY = "";
     private static final String ACTIVITY_NAME_MUSIC = "";
     private static final String ACTIVITY_NAME_THEME = "";
@@ -71,6 +76,11 @@ public class SdkTest extends UiAutomatorTestCase {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    private void debugMsg(String message) {
+        System.out.println(String.format("*****************************************\n%s\n" +
+                "*****************************************\n", message));
     }
 
     private void clickXY(int x, int y) {
@@ -133,48 +143,54 @@ public class SdkTest extends UiAutomatorTestCase {
         }
     }
 
-    private void turnOnWifi() throws UiObjectNotFoundException {
+    private void turnOnWlan() throws UiObjectNotFoundException {
         launchApp(ACTIVITY_NAME_SETTINGS);
-        UiObject wifiSettings;
-        wifiSettings = new UiObject(new UiSelector().className(""));
-        wifiSettings.click();
+        UiObject wlanSettings;
+        wlanSettings = new UiObject(new UiSelector().className("android.widget.TextView").text("WLAN"));
+        wlanSettings.click();
         waitFor(1);
-        UiObject switchButton;
-        switchButton = new UiObject(new UiSelector().className(""));
-        if (!switchButton.isChecked()) {
-            switchButton.click();
+        UiObject wlanSwitch;
+        wlanSwitch = new UiObject(new UiSelector().className("android.widget.CheckBox")
+                .resourceId("android:id/checkbox"));
+        if (!wlanSwitch.isChecked()) {
+            wlanSwitch.click();
+            waitFor(1);
+        } else {
+            UiObject connectedWlan, connectedSummary;
+            connectedWlan = new UiObject(new UiSelector().className("android.widget.CheckedTextView")
+                    .resourceId("android:id/title"));
+            while (true) {
+                connectedSummary = new UiObject(new UiSelector().className("android.widget.TextView")
+                        .resourceId("android:id/summary").textContains("已连接"));
+                if (connectedWlan.exists() && connectedSummary.exists()) {
+                    break;
+                } else {
+                    debugMsg("Wlan not connect yet.");
+                    waitFor(2);
+                }
+            }
+            uiDevice.pressHome();
             waitFor(1);
         }
-        UiObject isConnecting;
-        isConnecting = new UiObject(new UiSelector().className(""));
-        int times = 0;
-        while (true) {
-            if (isConnecting.exists()) {
-                break;
-            } else {
-                times += 1;
-                if (times >= 5) {
-                    break;
-                }
-                waitFor(1);
-            }
-        }
         waitFor(1);
-
     }
 
-    private void turnOffWifi() throws UiObjectNotFoundException {
+    private void turnOffWlan() throws UiObjectNotFoundException {
         launchApp(ACTIVITY_NAME_SETTINGS);
-        UiObject wifiSettings;
-        wifiSettings = new UiObject(new UiSelector().className(""));
-        wifiSettings.click();
+        UiObject wlanSettings;
+        wlanSettings = new UiObject(new UiSelector().className("android.widget.TextView")
+                .text("WLAN"));
+        wlanSettings.click();
         waitFor(1);
-        UiObject switchButton;
-        switchButton = new UiObject(new UiSelector().className(""));
-        if (switchButton.isChecked()) {
-            switchButton.click();
+        UiObject wlanSwitch;
+        wlanSwitch = new UiObject(new UiSelector().className("android.widget.CheckBox")
+                .resourceId("android:id/checkbox"));
+        if (wlanSwitch.isChecked()) {
+            wlanSwitch.click();
             waitFor(1);
         }
+        uiDevice.pressHome();
+        waitFor(1);
     }
 
     private void immersionMenu() throws UiObjectNotFoundException {
@@ -184,13 +200,15 @@ public class SdkTest extends UiAutomatorTestCase {
         waitFor(1);
     }
 
-    private void alertDialog(boolean confirmOrCancel) throws UiObjectNotFoundException {
+    private void alertDialog(String packageName, boolean confirmOrCancel) throws UiObjectNotFoundException {
         UiObject alertTitle;
-        alertTitle = new UiObject(new UiSelector().className(""));
+        alertTitle = new UiObject(new UiSelector().className("miui:id/alertTitle"));
         UiObject confirm, cancel;
+        String confirmButtonText = getConfirmButtonText(packageName);
+        String cancelButtonText = getCancelButtonText(packageName);
         if (alertTitle.exists()) {
-            confirm = new UiObject(new UiSelector().className(""));
-            cancel = new UiObject(new UiSelector().className(""));
+            confirm = new UiObject(new UiSelector().className("android.widget.Button").textContains(confirmButtonText));
+            cancel = new UiObject(new UiSelector().className("android.widget.Button").textContains(cancelButtonText));
             if (confirmOrCancel) {
                 confirm.click();
             } else {
@@ -198,6 +216,26 @@ public class SdkTest extends UiAutomatorTestCase {
             }
             waitFor(1);
         }
+    }
+
+    private String getConfirmButtonText(String packageName) {
+        String confirmButtonText = "确定";
+        if (packageName.equals(PACKAGE_NAME_CAMERA)) {
+            confirmButtonText = "开始";
+        } else if (packageName.equals(PACKAGE_NAME_SETTINGS)) {
+            confirmButtonText = "";
+        }
+        return confirmButtonText;
+    }
+
+    private String getCancelButtonText(String packageName) {
+        String cancelButtonText = "取消";
+        if (packageName.equals(PACKAGE_NAME_CAMERA)) {
+            cancelButtonText = "开始";
+        } else if (packageName.equals(PACKAGE_NAME_SETTINGS)) {
+            cancelButtonText = "";
+        }
+        return cancelButtonText;
     }
 
     private void progressBar() {
@@ -218,16 +256,16 @@ public class SdkTest extends UiAutomatorTestCase {
     }
 
     private void multiChoiseMode() throws UiObjectNotFoundException {
-        UiObject list;
-        list = new UiObject(new UiSelector().className(""));
+        UiObject listView;
+        listView = new UiObject(new UiSelector().className("android.widget.ListView"));
         int childCounts;
-        childCounts = list.getChildCount();
+        childCounts = listView.getChildCount();
         Random random = new Random();
         int rnd;
         UiObject child;
         if (childCounts > 0) {
             rnd = random.nextInt(childCounts);
-            child = list.getChild(new UiSelector().className("").index(rnd));
+            child = listView.getChild(new UiSelector().className("android.widget.RelativeLayout").index(rnd));
             if (child.isLongClickable()) {
                 child.longClick();
                 waitFor(1);
@@ -240,23 +278,36 @@ public class SdkTest extends UiAutomatorTestCase {
         try {
             String sCommand = String.format("am start -n %s", activityName);
             Runtime.getRuntime().exec(sCommand).wait();
-        } catch (IOException | InterruptedException e) {
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
         waitFor(2);
     }
 
     private void clearRecentOpenApps() throws UiObjectNotFoundException, RemoteException {
+        uiDevice.pressHome();
         uiDevice.pressRecentApps();
         waitFor(1);
         UiObject clearButton;
-        clearButton = new UiObject(new UiSelector().className(""));
+        clearButton = new UiObject(new UiSelector().className("android.widget.ImageView")
+                .resourceId("com.android.systemui:id/clearButton"));
         clearButton.click();
         waitFor(2);
     }
 
-    public void test001_Camera() {
+    public void test001_Camera() throws UiObjectNotFoundException {
+        debugMsg(String.format("testName = %s", new Throwable().getStackTrace()[0].getMethodName()));
         launchApp(ACTIVITY_NAME_CAMERA);
+        if (uiDevice.getCurrentPackageName().equals(PACKAGE_NAME_CAMERA)) {
+            UiObject shutterButton;
+            shutterButton = new UiObject(new UiSelector().className("android.widget.ImageView")
+                    .resourceId("com.android.camera:id/v6_shutter_button_internal"));
+            shutterButton.click();
+            waitFor(1);
+        }
+
     }
 
     public void test002_Gallery() {
@@ -313,30 +364,34 @@ public class SdkTest extends UiAutomatorTestCase {
 
     public void test014_Contacts() throws UiObjectNotFoundException {
         launchApp(ACTIVITY_NAME_CONTACTS);
-        swipePhone(RIGHT, 1);
-        UiObject diaPanel;
-        diaPanel = new UiObject(new UiSelector().className(""));
-        int childCounts;
-        childCounts = diaPanel.getChildCount();
-        Random random = new Random();
-        int rnd;
-        UiObject diaButton;
-        for (int i = 0; i < childCounts; i++) {
-            rnd = random.nextInt(childCounts);
-            diaButton = diaPanel.getChild(new UiSelector().className("").index(rnd));
-            diaButton.click();
+        if (uiDevice.getCurrentPackageName().equals(PACKAGE_NAME_CONTACTS)) {
+            swipePhone(RIGHT, 1);
+            UiObject diaPanel;
+            diaPanel = new UiObject(new UiSelector().className(""));
+            int childCounts;
+            childCounts = diaPanel.getChildCount();
+            Random random = new Random();
+            int rnd;
+            UiObject diaButton;
+            for (int i = 0; i < childCounts; i++) {
+                rnd = random.nextInt(childCounts);
+                diaButton = diaPanel.getChild(new UiSelector().className("").index(rnd));
+                diaButton.click();
+            }
+            swipePhone(LEFT, 3);
+            alertDialog(PACKAGE_NAME_CONTACTS, true);
+            progressBar();
         }
-        swipePhone(LEFT, 3);
-        alertDialog(true);
-        progressBar();
     }
 
     public void test015_SMS() throws UiObjectNotFoundException {
         launchApp(ACTIVITY_NAME_SMS);
-        UiObject newSMS;
-        newSMS = new UiObject(new UiSelector().className(""));
-        newSMS.click();
-        waitFor(1);
+        if (uiDevice.getCurrentPackageName().equals(PACKAGE_NAME_SMS)) {
+            UiObject newSMS;
+            newSMS = new UiObject(new UiSelector().className(""));
+            newSMS.click();
+            waitFor(1);
+        }
     }
 
     public void test016_Browser() {
@@ -345,30 +400,32 @@ public class SdkTest extends UiAutomatorTestCase {
 
     public void test017_Weather() throws UiObjectNotFoundException {
         launchApp(ACTIVITY_NAME_WEATHER);
-        immersionMenu();
+        if (uiDevice.getCurrentPackageName().equals(PACKAGE_NAME_WEATHER)) {
+            immersionMenu();
+        }
     }
 
     public void test018_Notes() throws UiObjectNotFoundException {
         launchApp(ACTIVITY_NAME_NOTES);
-        alertDialog(false);
-        UiObject richEditor;
-        while (true) {
-            richEditor = new UiObject(new UiSelector().className(""));
-            if (richEditor.exists()) {
-                uiDevice.pressBack();
-                waitFor(1);
-            } else {
-                break;
+        if (uiDevice.getCurrentPackageName().equals(PACKAGE_NAME_NOTES)) {
+            alertDialog(PACKAGE_NAME_NOTES, false);
+            UiObject richEditor;
+            while (true) {
+                richEditor = new UiObject(new UiSelector().className(""));
+                if (richEditor.exists()) {
+                    uiDevice.pressBack();
+                    waitFor(1);
+                } else {
+                    break;
+                }
             }
         }
-
     }
 
 
     @Override
     protected void tearDown() throws Exception {
         super.tearDown();
-        uiDevice.pressHome();
         clearRecentOpenApps();
     }
 }
