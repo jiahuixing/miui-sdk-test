@@ -17,19 +17,13 @@ import com.android.uiautomator.testrunner.UiAutomatorTestCase;
 import java.io.IOException;
 import java.util.Random;
 
-public class SdkTest extends UiAutomatorTestCase {
+public class PhoneSdkTest extends UiAutomatorTestCase {
 
-    private static UiDevice uiDevice;
-
-    //    phone property
-    private static int mHeight;
-    private static int mWidth;
     private static final int UP = 0;
     private static final int DOWN = 1;
     private static final int LEFT = 2;
     private static final int RIGHT = 3;
     private static final int DRAG_STEPS = 10;
-
     //    package names
     private static final String PACKAGE_NAME_KEYGUARD = "com.android.keyguard";
     private static final String PACKAGE_NAME_SETTINGS = "com.android.settings";
@@ -52,7 +46,6 @@ public class SdkTest extends UiAutomatorTestCase {
     private static final String PACKAGE_NAME_BROWSER = "com.android.browser";
     private static final String PACKAGE_NAME_WEATHER = "com.miui.weather";
     private static final String PACKAGE_NAME_NOTES = "com.miui.notes";
-
     //    activity names
     private static final String ACTIVITY_NAME_SETTINGS = "";
     private static final String ACTIVITY_NAME_CAMERA = "com.android.camera/.Camera";
@@ -74,6 +67,10 @@ public class SdkTest extends UiAutomatorTestCase {
     private static final String ACTIVITY_NAME_BROWSER = "";
     private static final String ACTIVITY_NAME_WEATHER = "";
     private static final String ACTIVITY_NAME_NOTES = "";
+    private static UiDevice uiDevice;
+    //    phone property
+    private static int mHeight;
+    private static int mWidth;
 
     @Override
     protected void setUp() throws Exception {
