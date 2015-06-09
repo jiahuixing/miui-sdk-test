@@ -238,50 +238,36 @@ public class SdkTest extends UiAutomatorTestCase {
 
     private String getConfirmButtonText(String packageName) {
         String confirmButtonText = "确定";
-        switch (packageName) {
-            case PACKAGE_NAME_CAMERA:
-                confirmButtonText = "开始";
-                break;
-            case PACKAGE_NAME_SETTINGS:
-                confirmButtonText = "";
-                break;
-            case PACKAGE_NAME_CLOCK:
-                confirmButtonText = "舍弃";
-                break;
-            case PACKAGE_NAME_SOUND_RECORDER:
-                confirmButtonText = "确定";
-                break;
-            case PACKAGE_NAME_FM_RADIO:
-                confirmButtonText = "同意";
-                break;
-            case PACKAGE_NAME_COMPASS:
-                confirmButtonText = "同意";
-                break;
+        if (packageName.equals(PACKAGE_NAME_CAMERA)) {
+            confirmButtonText = "开始";
+        } else if (packageName.equals(PACKAGE_NAME_SETTINGS)) {
+            confirmButtonText = "";
+        } else if (packageName.equals(PACKAGE_NAME_CLOCK)) {
+            confirmButtonText = "舍弃";
+        } else if (packageName.equals(PACKAGE_NAME_SOUND_RECORDER)) {
+            confirmButtonText = "确定";
+        } else if (packageName.equals(PACKAGE_NAME_FM_RADIO)) {
+            confirmButtonText = "同意";
+        } else if (packageName.equals(PACKAGE_NAME_COMPASS)) {
+            confirmButtonText = "同意";
         }
         return confirmButtonText;
     }
 
     private String getCancelButtonText(String packageName) {
         String cancelButtonText = "取消";
-        switch (packageName) {
-            case PACKAGE_NAME_CAMERA:
-                cancelButtonText = "开始";
-                break;
-            case PACKAGE_NAME_SETTINGS:
-                cancelButtonText = "";
-                break;
-            case PACKAGE_NAME_CLOCK:
-                cancelButtonText = "取消";
-                break;
-            case PACKAGE_NAME_SOUND_RECORDER:
-                cancelButtonText = "取消";
-                break;
-            case PACKAGE_NAME_FM_RADIO:
-                cancelButtonText = "拒绝";
-                break;
-            case PACKAGE_NAME_COMPASS:
-                cancelButtonText = "退出";
-                break;
+        if (packageName.equals(PACKAGE_NAME_CAMERA)) {
+            cancelButtonText = "开始";
+        } else if (packageName.equals(PACKAGE_NAME_SETTINGS)) {
+            cancelButtonText = "";
+        } else if (packageName.equals(PACKAGE_NAME_CLOCK)) {
+            cancelButtonText = "取消";
+        } else if (packageName.equals(PACKAGE_NAME_SOUND_RECORDER)) {
+            cancelButtonText = "取消";
+        } else if (packageName.equals(PACKAGE_NAME_FM_RADIO)) {
+            cancelButtonText = "拒绝";
+        } else if (packageName.equals(PACKAGE_NAME_COMPASS)) {
+            cancelButtonText = "退出";
         }
         return cancelButtonText;
     }
@@ -327,7 +313,9 @@ public class SdkTest extends UiAutomatorTestCase {
         try {
             String sCommand = String.format("am start -n %s", activityName);
             Runtime.getRuntime().exec(sCommand).wait();
-        } catch (IOException | InterruptedException e) {
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
         waitFor(2);
