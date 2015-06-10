@@ -46,6 +46,7 @@ public class PhoneSdkTest extends UiAutomatorTestCase {
     private static final String PACKAGE_NAME_BROWSER = "com.android.browser";
     private static final String PACKAGE_NAME_WEATHER = "com.miui.weather";
     private static final String PACKAGE_NAME_NOTES = "com.miui.notes";
+    private static final String PACKAGE_NAME_CALENDAR = "com.miui.calendar";
     //    activity names
     private static final String ACTIVITY_NAME_SETTINGS = "";
     private static final String ACTIVITY_NAME_CAMERA = "com.android.camera/.Camera";
@@ -67,6 +68,8 @@ public class PhoneSdkTest extends UiAutomatorTestCase {
     private static final String ACTIVITY_NAME_BROWSER = "";
     private static final String ACTIVITY_NAME_WEATHER = "";
     private static final String ACTIVITY_NAME_NOTES = "";
+    private static final String ACTIVITY_NAME_CALENDAR = "";
+    //    device
     private static UiDevice uiDevice;
     //    phone property
     private static int mHeight;
@@ -711,6 +714,13 @@ public class PhoneSdkTest extends UiAutomatorTestCase {
         }
     }
 
+    public void test019_Calendar() throws UiObjectNotFoundException {
+        debugMsg(String.format("methodName = %s", new Throwable().getStackTrace()[0].getMethodName()));
+        launchApp(ACTIVITY_NAME_CALENDAR);
+        if (uiDevice.getCurrentPackageName().equals(PACKAGE_NAME_CALENDAR)) {
+            alertDialog(PACKAGE_NAME_CALENDAR, true);
+        }
+    }
 
     @Override
     protected void tearDown() throws Exception {

@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.util.Random;
 
 public class PadSdkTest extends UiAutomatorTestCase {
+
     private static final int UP = 0;
     private static final int DOWN = 1;
     private static final int LEFT = 2;
@@ -45,6 +46,7 @@ public class PadSdkTest extends UiAutomatorTestCase {
     private static final String PACKAGE_NAME_BROWSER = "com.android.browser";
     private static final String PACKAGE_NAME_WEATHER = "com.miui.weather";
     private static final String PACKAGE_NAME_NOTES = "com.miui.notes";
+    private static final String PACKAGE_NAME_CALENDAR = "com.miui.calendar";
     //    activity names
     private static final String ACTIVITY_NAME_SETTINGS = "";
     private static final String ACTIVITY_NAME_CAMERA = "com.android.camera/.Camera";
@@ -66,6 +68,8 @@ public class PadSdkTest extends UiAutomatorTestCase {
     private static final String ACTIVITY_NAME_BROWSER = "";
     private static final String ACTIVITY_NAME_WEATHER = "";
     private static final String ACTIVITY_NAME_NOTES = "";
+    private static final String ACTIVITY_NAME_CALENDAR = "";
+    //    device
     private static UiDevice uiDevice;
     //    phone property
     private static int mHeight;
@@ -341,6 +345,199 @@ public class PadSdkTest extends UiAutomatorTestCase {
 
     }
 
+    public void test002_Contacts() throws UiObjectNotFoundException {
+        debugMsg(String.format("methodName = %s", new Throwable().getStackTrace()[0].getMethodName()));
+        launchApp(ACTIVITY_NAME_CONTACTS);
+        if (uiDevice.getCurrentPackageName().equals(PACKAGE_NAME_CONTACTS)) {
+            UiObject dial, contacts, yellowPage;
+            dial = new UiObject(new UiSelector().className("").textContains("拨号"));
+            contacts = new UiObject(new UiSelector().className("").textContains("联系人"));
+            yellowPage = new UiObject(new UiSelector().className("").textContains("黄页"));
+            dial.click();
+            waitFor(1);
+            UiObject showDial;
+            showDial = new UiObject(new UiSelector().className("").textContains("拨号"));
+            if (showDial.exists()) {
+                showDial.click();
+                waitFor(1);
+            }
+            UiObject diaPanel;
+            diaPanel = new UiObject(new UiSelector().className(""));
+            int childCounts;
+            childCounts = diaPanel.getChildCount();
+            Random random = new Random();
+            int rnd;
+            UiObject diaButton;
+            for (int i = 0; i < childCounts; i++) {
+                rnd = random.nextInt(childCounts);
+                diaButton = diaPanel.getChild(new UiSelector().className("").index(rnd));
+                diaButton.click();
+            }
+            contacts.click();
+            waitFor(1);
+            UiObject newContact;
+            newContact = new UiObject(new UiSelector().className(""));
+            newContact.click();
+            waitFor(1);
+            UiObject cancel;
+            cancel = new UiObject(new UiSelector().className("").textContains("取消"));
+            cancel.click();
+            waitFor(1);
+            alertDialog(PACKAGE_NAME_CONTACTS, true);
+            yellowPage.click();
+            waitFor(1);
+            alertDialog(PACKAGE_NAME_CONTACTS, true);
+            waitingProgressBar(5);
+        }
+    }
+
+    public void test003_Calendar() throws UiObjectNotFoundException {
+        debugMsg(String.format("methodName = %s", new Throwable().getStackTrace()[0].getMethodName()));
+        launchApp(ACTIVITY_NAME_CALENDAR);
+        if (uiDevice.getCurrentPackageName().equals(PACKAGE_NAME_CALENDAR)) {
+            alertDialog(PACKAGE_NAME_CALENDAR, true);
+        }
+    }
+
+    public void test004_Weather() throws UiObjectNotFoundException {
+        debugMsg(String.format("methodName = %s", new Throwable().getStackTrace()[0].getMethodName()));
+        launchApp(ACTIVITY_NAME_WEATHER);
+        if (uiDevice.getCurrentPackageName().equals(PACKAGE_NAME_WEATHER)) {
+            immersionMenu();
+        }
+    }
+
+    public void test005_Clock() throws UiObjectNotFoundException {
+        debugMsg(String.format("methodName = %s", new Throwable().getStackTrace()[0].getMethodName()));
+        launchApp(ACTIVITY_NAME_CLOCK);
+        if (uiDevice.getCurrentPackageName().equals(PACKAGE_NAME_CLOCK)) {
+            UiObject alarmClock, clock, stopwatch, timer;
+            alarmClock = new UiObject(new UiSelector().className("").textContains("闹钟"));
+            clock = new UiObject(new UiSelector().className("").textContains("时钟"));
+            stopwatch = new UiObject(new UiSelector().className("").textContains("秒表"));
+            timer = new UiObject(new UiSelector().className("").textContains("计时器"));
+            clock.click();
+            waitFor(1);
+            stopwatch.click();
+            waitFor(1);
+            timer.click();
+            waitFor(1);
+            alarmClock.click();
+            waitFor(1);
+            UiObject addAlarmClock, clockSettings;
+            addAlarmClock = new UiObject(new UiSelector().className("").textContains("添加"));
+            clockSettings = new UiObject(new UiSelector().className("").textContains("设置"));
+            addAlarmClock.click();
+            waitFor(1);
+            UiObject cancel;
+            cancel = new UiObject(new UiSelector().className("").textContains("取消"));
+            cancel.click();
+            alertDialog(PACKAGE_NAME_CLOCK, true);
+            waitFor(1);
+            clockSettings.click();
+            waitFor(1);
+            uiDevice.pressBack();
+        }
+    }
+
+    public void test006_Mail() throws UiObjectNotFoundException {
+        debugMsg(String.format("methodName = %s", new Throwable().getStackTrace()[0].getMethodName()));
+        launchApp(ACTIVITY_NAME_MAIL);
+        if (uiDevice.getCurrentPackageName().equals(PACKAGE_NAME_MAIL)) {
+            alertDialog(PACKAGE_NAME_MAIL, true);
+        }
+    }
+
+    public void test007_Calculator() throws UiObjectNotFoundException {
+        debugMsg(String.format("methodName = %s", new Throwable().getStackTrace()[0].getMethodName()));
+        launchApp(ACTIVITY_NAME_CALCULATOR);
+        if (uiDevice.getCurrentPackageName().equals(PACKAGE_NAME_CALCULATOR)) {
+            UiObject calculatorMode;
+            calculatorMode = new UiObject(new UiSelector().className(""));
+            UiObject panel;
+            int childCount;
+            Random random;
+            random = new Random();
+            int rnd;
+            UiObject calculatorButton;
+            panel = new UiObject(new UiSelector().className(""));
+            childCount = panel.getChildCount();
+            for (int i = 0; i < childCount; i++) {
+                rnd = random.nextInt(childCount);
+                calculatorButton = panel.getChild(new UiSelector().className("").index(rnd));
+                calculatorButton.click();
+            }
+            calculatorMode.click();
+            waitFor(1);
+            panel = new UiObject(new UiSelector().className(""));
+            childCount = panel.getChildCount();
+            for (int i = 0; i < childCount; i++) {
+                rnd = random.nextInt(childCount);
+                calculatorButton = panel.getChild(new UiSelector().className("").index(rnd));
+                calculatorButton.click();
+            }
+        }
+    }
+
+    public void test008_Notes() throws UiObjectNotFoundException {
+        debugMsg(String.format("methodName = %s", new Throwable().getStackTrace()[0].getMethodName()));
+        launchApp(ACTIVITY_NAME_NOTES);
+        if (uiDevice.getCurrentPackageName().equals(PACKAGE_NAME_NOTES)) {
+            alertDialog(PACKAGE_NAME_NOTES, false);
+            UiObject richEditor;
+            while (true) {
+                richEditor = new UiObject(new UiSelector().className(""));
+                if (richEditor.exists()) {
+                    uiDevice.pressBack();
+                    waitFor(1);
+                } else {
+                    break;
+                }
+            }
+        }
+    }
+
+    public void test010_AppMarket() throws UiObjectNotFoundException {
+        debugMsg(String.format("methodName = %s", new Throwable().getStackTrace()[0].getMethodName()));
+        launchApp(ACTIVITY_NAME_APP_MARKET);
+        if (uiDevice.getCurrentPackageName().equals(PACKAGE_NAME_APP_MARKET)) {
+            alertDialog(PACKAGE_NAME_APP_MARKET, true);
+            UiObject competitive, ranking, assortment, myMarket;
+            competitive = new UiObject(new UiSelector().className("").textContains("精品"));
+            ranking = new UiObject(new UiSelector().className("").textContains("排行"));
+            assortment = new UiObject(new UiSelector().className("").textContains("分类"));
+            myMarket = new UiObject(new UiSelector().className("").textContains("我的"));
+            competitive.click();
+            waitFor(1);
+            ranking.click();
+            waitFor(1);
+            assortment.click();
+            waitFor(1);
+            myMarket.click();
+            waitFor(1);
+        }
+    }
+
+    public void test012_FileExplorer() throws UiObjectNotFoundException {
+        debugMsg(String.format("methodName = %s", new Throwable().getStackTrace()[0].getMethodName()));
+        launchApp(ACTIVITY_NAME_FILE_EXPLORER);
+        if (uiDevice.getCurrentPackageName().equals(PACKAGE_NAME_FILE_EXPLORER)) {
+            UiObject fileList;
+            fileList = new UiObject(new UiSelector().className(""));
+            fileList.click();
+            waitingProgressBar(5);
+            enterMultiChoiceMode();
+            UiObject cancel;
+            cancel = new UiObject(new UiSelector().className(""));
+            cancel.click();
+            waitFor(1);
+            immersionMenu();
+            UiObject closeImmersionMenu;
+            closeImmersionMenu = new UiObject(new UiSelector().className(""));
+            closeImmersionMenu.click();
+        }
+    }
+
     public void test002_Gallery() throws UiObjectNotFoundException {
         debugMsg(String.format("methodName = %s", new Throwable().getStackTrace()[0].getMethodName()));
         launchApp(ACTIVITY_NAME_GALLERY);
@@ -381,35 +578,6 @@ public class PadSdkTest extends UiAutomatorTestCase {
         }
     }
 
-    public void test005_AppMarket() throws UiObjectNotFoundException {
-        debugMsg(String.format("methodName = %s", new Throwable().getStackTrace()[0].getMethodName()));
-        launchApp(ACTIVITY_NAME_APP_MARKET);
-        if (uiDevice.getCurrentPackageName().equals(PACKAGE_NAME_APP_MARKET)) {
-            alertDialog(PACKAGE_NAME_APP_MARKET, true);
-            UiObject competitive, ranking, assortment, myMarket;
-            competitive = new UiObject(new UiSelector().className("").textContains("精品"));
-            ranking = new UiObject(new UiSelector().className("").textContains("排行"));
-            assortment = new UiObject(new UiSelector().className("").textContains("分类"));
-            myMarket = new UiObject(new UiSelector().className("").textContains("我的"));
-            competitive.click();
-            waitFor(1);
-            ranking.click();
-            waitFor(1);
-            assortment.click();
-            waitFor(1);
-            myMarket.click();
-            waitFor(1);
-        }
-    }
-
-    public void test006_Mail() throws UiObjectNotFoundException {
-        debugMsg(String.format("methodName = %s", new Throwable().getStackTrace()[0].getMethodName()));
-        launchApp(ACTIVITY_NAME_MAIL);
-        if (uiDevice.getCurrentPackageName().equals(PACKAGE_NAME_MAIL)) {
-            alertDialog(PACKAGE_NAME_MAIL, true);
-        }
-    }
-
     public void test007_Updater() throws UiObjectNotFoundException {
         debugMsg(String.format("methodName = %s", new Throwable().getStackTrace()[0].getMethodName()));
         launchApp(ACTIVITY_NAME_UPDATER);
@@ -443,38 +611,6 @@ public class PadSdkTest extends UiAutomatorTestCase {
         }
     }
 
-    public void test008_Clock() throws UiObjectNotFoundException {
-        debugMsg(String.format("methodName = %s", new Throwable().getStackTrace()[0].getMethodName()));
-        launchApp(ACTIVITY_NAME_CLOCK);
-        if (uiDevice.getCurrentPackageName().equals(PACKAGE_NAME_CLOCK)) {
-            UiObject alarmClock, clock, stopwatch, timer;
-            alarmClock = new UiObject(new UiSelector().className("").textContains("闹钟"));
-            clock = new UiObject(new UiSelector().className("").textContains("时钟"));
-            stopwatch = new UiObject(new UiSelector().className("").textContains("秒表"));
-            timer = new UiObject(new UiSelector().className("").textContains("计时器"));
-            clock.click();
-            waitFor(1);
-            stopwatch.click();
-            waitFor(1);
-            timer.click();
-            waitFor(1);
-            alarmClock.click();
-            waitFor(1);
-            UiObject addAlarmClock, clockSettings;
-            addAlarmClock = new UiObject(new UiSelector().className("").textContains("添加"));
-            clockSettings = new UiObject(new UiSelector().className("").textContains("设置"));
-            addAlarmClock.click();
-            waitFor(1);
-            UiObject cancel;
-            cancel = new UiObject(new UiSelector().className("").textContains("取消"));
-            cancel.click();
-            alertDialog(PACKAGE_NAME_CLOCK, true);
-            waitFor(1);
-            clockSettings.click();
-            waitFor(1);
-            uiDevice.pressBack();
-        }
-    }
 
     public void test008_SoundRecorder() throws UiObjectNotFoundException {
         debugMsg(String.format("methodName = %s", new Throwable().getStackTrace()[0].getMethodName()));
@@ -535,57 +671,6 @@ public class PadSdkTest extends UiAutomatorTestCase {
         }
     }
 
-    public void test010_Calculator() throws UiObjectNotFoundException {
-        debugMsg(String.format("methodName = %s", new Throwable().getStackTrace()[0].getMethodName()));
-        launchApp(ACTIVITY_NAME_CALCULATOR);
-        if (uiDevice.getCurrentPackageName().equals(PACKAGE_NAME_CALCULATOR)) {
-            UiObject calculatorMode;
-            calculatorMode = new UiObject(new UiSelector().className(""));
-            UiObject panel;
-            int childCount;
-            Random random;
-            random = new Random();
-            int rnd;
-            UiObject calculatorButton;
-            panel = new UiObject(new UiSelector().className(""));
-            childCount = panel.getChildCount();
-            for (int i = 0; i < childCount; i++) {
-                rnd = random.nextInt(childCount);
-                calculatorButton = panel.getChild(new UiSelector().className("").index(rnd));
-                calculatorButton.click();
-            }
-            calculatorMode.click();
-            waitFor(1);
-            panel = new UiObject(new UiSelector().className(""));
-            childCount = panel.getChildCount();
-            for (int i = 0; i < childCount; i++) {
-                rnd = random.nextInt(childCount);
-                calculatorButton = panel.getChild(new UiSelector().className("").index(rnd));
-                calculatorButton.click();
-            }
-        }
-    }
-
-    public void test011_FileExplorer() throws UiObjectNotFoundException {
-        debugMsg(String.format("methodName = %s", new Throwable().getStackTrace()[0].getMethodName()));
-        launchApp(ACTIVITY_NAME_FILE_EXPLORER);
-        if (uiDevice.getCurrentPackageName().equals(PACKAGE_NAME_FILE_EXPLORER)) {
-            UiObject fileList;
-            fileList = new UiObject(new UiSelector().className(""));
-            fileList.click();
-            waitingProgressBar(5);
-            enterMultiChoiceMode();
-            UiObject cancel;
-            cancel = new UiObject(new UiSelector().className(""));
-            cancel.click();
-            waitFor(1);
-            immersionMenu();
-            UiObject closeImmersionMenu;
-            closeImmersionMenu = new UiObject(new UiSelector().className(""));
-            closeImmersionMenu.click();
-        }
-    }
-
     public void test012_Compass() throws UiObjectNotFoundException {
         debugMsg(String.format("methodName = %s", new Throwable().getStackTrace()[0].getMethodName()));
         launchApp(ACTIVITY_NAME_COMPASS);
@@ -604,51 +689,6 @@ public class PadSdkTest extends UiAutomatorTestCase {
         }
     }
 
-    public void test014_Contacts() throws UiObjectNotFoundException {
-        debugMsg(String.format("methodName = %s", new Throwable().getStackTrace()[0].getMethodName()));
-        launchApp(ACTIVITY_NAME_CONTACTS);
-        if (uiDevice.getCurrentPackageName().equals(PACKAGE_NAME_CONTACTS)) {
-            UiObject dial, contacts, yellowPage;
-            dial = new UiObject(new UiSelector().className("").textContains("拨号"));
-            contacts = new UiObject(new UiSelector().className("").textContains("联系人"));
-            yellowPage = new UiObject(new UiSelector().className("").textContains("黄页"));
-            dial.click();
-            waitFor(1);
-            UiObject showDial;
-            showDial = new UiObject(new UiSelector().className("").textContains("拨号"));
-            if (showDial.exists()) {
-                showDial.click();
-                waitFor(1);
-            }
-            UiObject diaPanel;
-            diaPanel = new UiObject(new UiSelector().className(""));
-            int childCounts;
-            childCounts = diaPanel.getChildCount();
-            Random random = new Random();
-            int rnd;
-            UiObject diaButton;
-            for (int i = 0; i < childCounts; i++) {
-                rnd = random.nextInt(childCounts);
-                diaButton = diaPanel.getChild(new UiSelector().className("").index(rnd));
-                diaButton.click();
-            }
-            contacts.click();
-            waitFor(1);
-            UiObject newContact;
-            newContact = new UiObject(new UiSelector().className(""));
-            newContact.click();
-            waitFor(1);
-            UiObject cancel;
-            cancel = new UiObject(new UiSelector().className("").textContains("取消"));
-            cancel.click();
-            waitFor(1);
-            alertDialog(PACKAGE_NAME_CONTACTS, true);
-            yellowPage.click();
-            waitFor(1);
-            alertDialog(PACKAGE_NAME_CONTACTS, true);
-            waitingProgressBar(5);
-        }
-    }
 
     public void test015_SMS() throws UiObjectNotFoundException {
         debugMsg(String.format("methodName = %s", new Throwable().getStackTrace()[0].getMethodName()));
@@ -683,33 +723,6 @@ public class PadSdkTest extends UiAutomatorTestCase {
             quit.click();
         }
     }
-
-    public void test017_Weather() throws UiObjectNotFoundException {
-        debugMsg(String.format("methodName = %s", new Throwable().getStackTrace()[0].getMethodName()));
-        launchApp(ACTIVITY_NAME_WEATHER);
-        if (uiDevice.getCurrentPackageName().equals(PACKAGE_NAME_WEATHER)) {
-            immersionMenu();
-        }
-    }
-
-    public void test018_Notes() throws UiObjectNotFoundException {
-        debugMsg(String.format("methodName = %s", new Throwable().getStackTrace()[0].getMethodName()));
-        launchApp(ACTIVITY_NAME_NOTES);
-        if (uiDevice.getCurrentPackageName().equals(PACKAGE_NAME_NOTES)) {
-            alertDialog(PACKAGE_NAME_NOTES, false);
-            UiObject richEditor;
-            while (true) {
-                richEditor = new UiObject(new UiSelector().className(""));
-                if (richEditor.exists()) {
-                    uiDevice.pressBack();
-                    waitFor(1);
-                } else {
-                    break;
-                }
-            }
-        }
-    }
-
 
     @Override
     protected void tearDown() throws Exception {
