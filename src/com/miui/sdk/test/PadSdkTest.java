@@ -7,6 +7,7 @@ package com.miui.sdk.test;
  * Created at 20:02
  */
 
+import android.graphics.Rect;
 import android.os.RemoteException;
 import com.android.uiautomator.core.UiDevice;
 import com.android.uiautomator.core.UiObject;
@@ -71,13 +72,13 @@ public class PadSdkTest extends UiAutomatorTestCase {
     private static final String ACTIVITY_NAME_CALENDAR = "";
     //    device
     private static UiDevice uiDevice;
-    //    phone property
+    //    pad display property
     private static int mHeight;
     private static int mWidth;
 
     @Override
     protected void setUp() throws Exception {
-        debugMsg(String.format("methodName = %s", new Throwable().getStackTrace()[0].getMethodName()));
+        debugMsg(String.format("methodName = %s", getCurrentMethodName()));
         super.setUp();
         if (uiDevice == null) {
             uiDevice = UiDevice.getInstance();
@@ -86,6 +87,13 @@ public class PadSdkTest extends UiAutomatorTestCase {
             mHeight = uiDevice.getDisplayHeight();
             mWidth = uiDevice.getDisplayWidth();
         }
+    }
+
+    private static String getCurrentMethodName() {
+        String methodName;
+        StackTraceElement[] stackTraceElement = new Throwable().getStackTrace();
+        methodName = stackTraceElement[1].getMethodName();
+        return methodName;
     }
 
     private void waitFor(int seconds) {
@@ -102,10 +110,12 @@ public class PadSdkTest extends UiAutomatorTestCase {
     }
 
     private void clickXY(int x, int y) {
+        debugMsg(String.format("methodName = %s", getCurrentMethodName()));
         uiDevice.click(x, y);
     }
 
     private void swipePhone(int swipeDirection, int times) {
+        debugMsg(String.format("methodName = %s", getCurrentMethodName()));
         int startX, startY, endX, endY;
         switch (swipeDirection) {
             case UP:
@@ -147,6 +157,7 @@ public class PadSdkTest extends UiAutomatorTestCase {
     }
 
     private void unLock() throws RemoteException {
+        debugMsg(String.format("methodName = %s", getCurrentMethodName()));
         int startX, startY, endX, endY;
         if (!uiDevice.isScreenOn()) {
             uiDevice.wakeUp();
@@ -162,6 +173,7 @@ public class PadSdkTest extends UiAutomatorTestCase {
     }
 
     private void turnOnWlan() throws UiObjectNotFoundException {
+        debugMsg(String.format("methodName = %s", getCurrentMethodName()));
         launchApp(ACTIVITY_NAME_SETTINGS);
         UiObject wlanSettings;
         wlanSettings = new UiObject(new UiSelector().className("android.widget.TextView").text("WLAN"));
@@ -194,6 +206,7 @@ public class PadSdkTest extends UiAutomatorTestCase {
     }
 
     private void turnOffWlan() throws UiObjectNotFoundException {
+        debugMsg(String.format("methodName = %s", getCurrentMethodName()));
         launchApp(ACTIVITY_NAME_SETTINGS);
         UiObject wlanSettings;
         wlanSettings = new UiObject(new UiSelector().className("android.widget.TextView")
@@ -212,6 +225,7 @@ public class PadSdkTest extends UiAutomatorTestCase {
     }
 
     private void immersionMenu() throws UiObjectNotFoundException {
+        debugMsg(String.format("methodName = %s", getCurrentMethodName()));
         UiObject immersionMenu;
         immersionMenu = new UiObject(new UiSelector().className(""));
         immersionMenu.click();
@@ -219,6 +233,7 @@ public class PadSdkTest extends UiAutomatorTestCase {
     }
 
     private void alertDialog(String packageName, boolean confirmOrCancel) throws UiObjectNotFoundException {
+        debugMsg(String.format("methodName = %s", getCurrentMethodName()));
         UiObject alertTitle;
         alertTitle = new UiObject(new UiSelector().className("miui:id/alertTitle"));
         UiObject confirm, cancel;
@@ -237,6 +252,7 @@ public class PadSdkTest extends UiAutomatorTestCase {
     }
 
     private String getConfirmButtonText(String packageName) {
+        debugMsg(String.format("methodName = %s", getCurrentMethodName()));
         String confirmButtonText = "确定";
         if (packageName.equals(PACKAGE_NAME_CAMERA)) {
             confirmButtonText = "开始";
@@ -255,6 +271,7 @@ public class PadSdkTest extends UiAutomatorTestCase {
     }
 
     private String getCancelButtonText(String packageName) {
+        debugMsg(String.format("methodName = %s", getCurrentMethodName()));
         String cancelButtonText = "取消";
         if (packageName.equals(PACKAGE_NAME_CAMERA)) {
             cancelButtonText = "开始";
@@ -273,6 +290,7 @@ public class PadSdkTest extends UiAutomatorTestCase {
     }
 
     private void waitingProgressBar(int waitingTime) {
+        debugMsg(String.format("methodName = %s", getCurrentMethodName()));
         UiObject progressBar;
         int times = 0;
         while (true) {
@@ -290,6 +308,7 @@ public class PadSdkTest extends UiAutomatorTestCase {
     }
 
     private void enterMultiChoiceMode() throws UiObjectNotFoundException {
+        debugMsg(String.format("methodName = %s", getCurrentMethodName()));
         UiObject listView;
         listView = new UiObject(new UiSelector().className("android.widget.ListView"));
         int childCounts;
@@ -300,6 +319,8 @@ public class PadSdkTest extends UiAutomatorTestCase {
         if (childCounts > 0) {
             rnd = random.nextInt(childCounts);
             child = listView.getChild(new UiSelector().className("android.widget.RelativeLayout").index(rnd));
+            Rect bounds;
+            bounds = child.getBounds();
             if (child.isLongClickable()) {
                 child.longClick();
                 waitFor(1);
@@ -322,6 +343,7 @@ public class PadSdkTest extends UiAutomatorTestCase {
     }
 
     private void clearOpenedApps() throws UiObjectNotFoundException, RemoteException {
+        debugMsg(String.format("methodName = %s", getCurrentMethodName()));
         uiDevice.pressHome();
         uiDevice.pressRecentApps();
         waitFor(1);
@@ -333,7 +355,7 @@ public class PadSdkTest extends UiAutomatorTestCase {
     }
 
     public void test001_Camera() throws UiObjectNotFoundException {
-        debugMsg(String.format("methodName = %s", new Throwable().getStackTrace()[0].getMethodName()));
+        debugMsg(String.format("methodName = %s", getCurrentMethodName()));
         launchApp(ACTIVITY_NAME_CAMERA);
         if (uiDevice.getCurrentPackageName().equals(PACKAGE_NAME_CAMERA)) {
             UiObject shutterButton;
@@ -346,7 +368,7 @@ public class PadSdkTest extends UiAutomatorTestCase {
     }
 
     public void test002_Contacts() throws UiObjectNotFoundException {
-        debugMsg(String.format("methodName = %s", new Throwable().getStackTrace()[0].getMethodName()));
+        debugMsg(String.format("methodName = %s", getCurrentMethodName()));
         launchApp(ACTIVITY_NAME_CONTACTS);
         if (uiDevice.getCurrentPackageName().equals(PACKAGE_NAME_CONTACTS)) {
             UiObject dial, contacts, yellowPage;
@@ -392,7 +414,7 @@ public class PadSdkTest extends UiAutomatorTestCase {
     }
 
     public void test003_Calendar() throws UiObjectNotFoundException {
-        debugMsg(String.format("methodName = %s", new Throwable().getStackTrace()[0].getMethodName()));
+        debugMsg(String.format("methodName = %s", getCurrentMethodName()));
         launchApp(ACTIVITY_NAME_CALENDAR);
         if (uiDevice.getCurrentPackageName().equals(PACKAGE_NAME_CALENDAR)) {
             alertDialog(PACKAGE_NAME_CALENDAR, true);
@@ -400,7 +422,7 @@ public class PadSdkTest extends UiAutomatorTestCase {
     }
 
     public void test004_Weather() throws UiObjectNotFoundException {
-        debugMsg(String.format("methodName = %s", new Throwable().getStackTrace()[0].getMethodName()));
+        debugMsg(String.format("methodName = %s", getCurrentMethodName()));
         launchApp(ACTIVITY_NAME_WEATHER);
         if (uiDevice.getCurrentPackageName().equals(PACKAGE_NAME_WEATHER)) {
             immersionMenu();
@@ -408,7 +430,7 @@ public class PadSdkTest extends UiAutomatorTestCase {
     }
 
     public void test005_Clock() throws UiObjectNotFoundException {
-        debugMsg(String.format("methodName = %s", new Throwable().getStackTrace()[0].getMethodName()));
+        debugMsg(String.format("methodName = %s", getCurrentMethodName()));
         launchApp(ACTIVITY_NAME_CLOCK);
         if (uiDevice.getCurrentPackageName().equals(PACKAGE_NAME_CLOCK)) {
             UiObject alarmClock, clock, stopwatch, timer;
@@ -441,7 +463,7 @@ public class PadSdkTest extends UiAutomatorTestCase {
     }
 
     public void test006_Mail() throws UiObjectNotFoundException {
-        debugMsg(String.format("methodName = %s", new Throwable().getStackTrace()[0].getMethodName()));
+        debugMsg(String.format("methodName = %s", getCurrentMethodName()));
         launchApp(ACTIVITY_NAME_MAIL);
         if (uiDevice.getCurrentPackageName().equals(PACKAGE_NAME_MAIL)) {
             alertDialog(PACKAGE_NAME_MAIL, true);
@@ -449,7 +471,7 @@ public class PadSdkTest extends UiAutomatorTestCase {
     }
 
     public void test007_Calculator() throws UiObjectNotFoundException {
-        debugMsg(String.format("methodName = %s", new Throwable().getStackTrace()[0].getMethodName()));
+        debugMsg(String.format("methodName = %s", getCurrentMethodName()));
         launchApp(ACTIVITY_NAME_CALCULATOR);
         if (uiDevice.getCurrentPackageName().equals(PACKAGE_NAME_CALCULATOR)) {
             UiObject calculatorMode;
@@ -480,7 +502,7 @@ public class PadSdkTest extends UiAutomatorTestCase {
     }
 
     public void test008_Notes() throws UiObjectNotFoundException {
-        debugMsg(String.format("methodName = %s", new Throwable().getStackTrace()[0].getMethodName()));
+        debugMsg(String.format("methodName = %s", getCurrentMethodName()));
         launchApp(ACTIVITY_NAME_NOTES);
         if (uiDevice.getCurrentPackageName().equals(PACKAGE_NAME_NOTES)) {
             alertDialog(PACKAGE_NAME_NOTES, false);
@@ -498,7 +520,7 @@ public class PadSdkTest extends UiAutomatorTestCase {
     }
 
     public void test010_AppMarket() throws UiObjectNotFoundException {
-        debugMsg(String.format("methodName = %s", new Throwable().getStackTrace()[0].getMethodName()));
+        debugMsg(String.format("methodName = %s", getCurrentMethodName()));
         launchApp(ACTIVITY_NAME_APP_MARKET);
         if (uiDevice.getCurrentPackageName().equals(PACKAGE_NAME_APP_MARKET)) {
             alertDialog(PACKAGE_NAME_APP_MARKET, true);
@@ -519,7 +541,7 @@ public class PadSdkTest extends UiAutomatorTestCase {
     }
 
     public void test012_FileExplorer() throws UiObjectNotFoundException {
-        debugMsg(String.format("methodName = %s", new Throwable().getStackTrace()[0].getMethodName()));
+        debugMsg(String.format("methodName = %s", getCurrentMethodName()));
         launchApp(ACTIVITY_NAME_FILE_EXPLORER);
         if (uiDevice.getCurrentPackageName().equals(PACKAGE_NAME_FILE_EXPLORER)) {
             UiObject fileList;
@@ -539,7 +561,7 @@ public class PadSdkTest extends UiAutomatorTestCase {
     }
 
     public void test002_Gallery() throws UiObjectNotFoundException {
-        debugMsg(String.format("methodName = %s", new Throwable().getStackTrace()[0].getMethodName()));
+        debugMsg(String.format("methodName = %s", getCurrentMethodName()));
         launchApp(ACTIVITY_NAME_GALLERY);
         if (uiDevice.getCurrentPackageName().equals(PACKAGE_NAME_GALLERY)) {
             alertDialog(PACKAGE_NAME_GALLERY, true);
@@ -547,7 +569,7 @@ public class PadSdkTest extends UiAutomatorTestCase {
     }
 
     public void test003_Music() throws UiObjectNotFoundException {
-        debugMsg(String.format("methodName = %s", new Throwable().getStackTrace()[0].getMethodName()));
+        debugMsg(String.format("methodName = %s", getCurrentMethodName()));
         launchApp(ACTIVITY_NAME_MUSIC);
         if (uiDevice.getCurrentPackageName().equals(PACKAGE_NAME_MUSIC)) {
             alertDialog(PACKAGE_NAME_MUSIC, true);
@@ -567,7 +589,7 @@ public class PadSdkTest extends UiAutomatorTestCase {
     }
 
     public void test004_Theme() throws UiObjectNotFoundException {
-        debugMsg(String.format("methodName = %s", new Throwable().getStackTrace()[0].getMethodName()));
+        debugMsg(String.format("methodName = %s", getCurrentMethodName()));
         launchApp(ACTIVITY_NAME_THEME);
         if (uiDevice.getCurrentPackageName().equals(PACKAGE_NAME_THEME)) {
             alertDialog(PACKAGE_NAME_THEME, true);
@@ -579,7 +601,7 @@ public class PadSdkTest extends UiAutomatorTestCase {
     }
 
     public void test007_Updater() throws UiObjectNotFoundException {
-        debugMsg(String.format("methodName = %s", new Throwable().getStackTrace()[0].getMethodName()));
+        debugMsg(String.format("methodName = %s", getCurrentMethodName()));
         launchApp(ACTIVITY_NAME_UPDATER);
         if (uiDevice.getCurrentPackageName().equals(PACKAGE_NAME_UPDATER)) {
             UiObject checkUpdate;
@@ -613,7 +635,7 @@ public class PadSdkTest extends UiAutomatorTestCase {
 
 
     public void test008_SoundRecorder() throws UiObjectNotFoundException {
-        debugMsg(String.format("methodName = %s", new Throwable().getStackTrace()[0].getMethodName()));
+        debugMsg(String.format("methodName = %s", getCurrentMethodName()));
         launchApp(ACTIVITY_NAME_SOUND_RECORDER);
         if (uiDevice.getCurrentPackageName().equals(PACKAGE_NAME_SOUND_RECORDER)) {
             UiObject record;
@@ -640,7 +662,7 @@ public class PadSdkTest extends UiAutomatorTestCase {
     }
 
     public void test009_FMRadio() throws UiObjectNotFoundException {
-        debugMsg(String.format("methodName = %s", new Throwable().getStackTrace()[0].getMethodName()));
+        debugMsg(String.format("methodName = %s", getCurrentMethodName()));
         turnOffWlan();
         launchApp(ACTIVITY_NAME_FM_RADIO);
         if (uiDevice.getCurrentPackageName().equals(PACKAGE_NAME_FM_RADIO)) {
@@ -672,7 +694,7 @@ public class PadSdkTest extends UiAutomatorTestCase {
     }
 
     public void test012_Compass() throws UiObjectNotFoundException {
-        debugMsg(String.format("methodName = %s", new Throwable().getStackTrace()[0].getMethodName()));
+        debugMsg(String.format("methodName = %s", getCurrentMethodName()));
         launchApp(ACTIVITY_NAME_COMPASS);
         if (uiDevice.getCurrentPackageName().equals(PACKAGE_NAME_COMPASS)) {
             alertDialog(PACKAGE_NAME_COMPASS, true);
@@ -682,7 +704,7 @@ public class PadSdkTest extends UiAutomatorTestCase {
     }
 
     public void test013_SecurityCenter() throws UiObjectNotFoundException {
-        debugMsg(String.format("methodName = %s", new Throwable().getStackTrace()[0].getMethodName()));
+        debugMsg(String.format("methodName = %s", getCurrentMethodName()));
         launchApp(ACTIVITY_NAME_SECURITY_CENTRE);
         if (uiDevice.getCurrentPackageName().equals(PACKAGE_NAME_SECURITY_CENTRE)) {
             alertDialog(PACKAGE_NAME_SECURITY_CENTRE, true);
@@ -691,7 +713,7 @@ public class PadSdkTest extends UiAutomatorTestCase {
 
 
     public void test015_SMS() throws UiObjectNotFoundException {
-        debugMsg(String.format("methodName = %s", new Throwable().getStackTrace()[0].getMethodName()));
+        debugMsg(String.format("methodName = %s", getCurrentMethodName()));
         launchApp(ACTIVITY_NAME_SMS);
         if (uiDevice.getCurrentPackageName().equals(PACKAGE_NAME_SMS)) {
             alertDialog(PACKAGE_NAME_SMS, true);
@@ -710,7 +732,7 @@ public class PadSdkTest extends UiAutomatorTestCase {
     }
 
     public void test016_Browser() throws UiObjectNotFoundException {
-        debugMsg(String.format("methodName = %s", new Throwable().getStackTrace()[0].getMethodName()));
+        debugMsg(String.format("methodName = %s", getCurrentMethodName()));
         launchApp(ACTIVITY_NAME_BROWSER);
         if (uiDevice.getCurrentPackageName().equals(PACKAGE_NAME_BROWSER)) {
             alertDialog(PACKAGE_NAME_BROWSER, true);
@@ -726,7 +748,7 @@ public class PadSdkTest extends UiAutomatorTestCase {
 
     @Override
     protected void tearDown() throws Exception {
-        debugMsg(String.format("methodName = %s", new Throwable().getStackTrace()[0].getMethodName()));
+        debugMsg(String.format("methodName = %s", getCurrentMethodName()));
         super.tearDown();
         clearOpenedApps();
     }
