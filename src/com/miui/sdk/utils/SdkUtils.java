@@ -173,6 +173,7 @@ public class SdkUtils {
 
     public static void alertDialog(String packageName, boolean confirmOrCancel) throws UiObjectNotFoundException {
         debugMsg(String.format("methodName = %s", getCurrentMethodName()));
+        waitFor(2);
         UiObject alertTitle;
         alertTitle = new UiObject(new UiSelector().className("miui:id/alertTitle"));
         UiObject confirm, cancel;
@@ -267,10 +268,8 @@ public class SdkUtils {
         uiDevice.pressHome();
         try {
             String sCommand = String.format("am start -n %s", activityName);
-            Runtime.getRuntime().exec(sCommand).wait();
+            Runtime.getRuntime().exec(sCommand);
         } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
             e.printStackTrace();
         }
         waitFor(2);
@@ -278,6 +277,7 @@ public class SdkUtils {
 
     public static void clearOpenedApps(UiDevice uiDevice) throws UiObjectNotFoundException, RemoteException {
         debugMsg(String.format("methodName = %s", getCurrentMethodName()));
+        waitFor(1);
         uiDevice.pressHome();
         uiDevice.pressRecentApps();
         waitFor(1);

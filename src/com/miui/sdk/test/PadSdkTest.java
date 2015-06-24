@@ -7,6 +7,7 @@ package com.miui.sdk.test;
  * Created at 20:02
  */
 
+import android.os.RemoteException;
 import com.android.uiautomator.core.UiDevice;
 import com.android.uiautomator.core.UiObject;
 import com.android.uiautomator.core.UiObjectNotFoundException;
@@ -27,21 +28,26 @@ public class PadSdkTest extends UiAutomatorTestCase {
         super.setUp();
         if (uiDevice == null) {
             uiDevice = UiDevice.getInstance();
+            initPad();
         }
+    }
+
+    private void initPad() throws RemoteException, UiObjectNotFoundException {
         SdkUtils.unLock(uiDevice);
+        SdkUtils.clearOpenedApps(uiDevice);
     }
 
     public void test001_Camera() throws UiObjectNotFoundException {
         SdkUtils.debugMsg(String.format("methodName = %s", SdkUtils.getCurrentMethodName()));
         SdkUtils.launchApp(uiDevice, Constants.ACTIVITY_NAME_CAMERA);
         if (uiDevice.getCurrentPackageName().equals(Constants.PACKAGE_NAME_CAMERA)) {
+            SdkUtils.alertDialog(Constants.PACKAGE_NAME_CAMERA, true);
             UiObject shutterButton;
             shutterButton = new UiObject(new UiSelector().className("android.widget.ImageView")
                     .resourceId("com.android.camera:id/v6_shutter_button_internal"));
             shutterButton.click();
             SdkUtils.waitFor(1);
         }
-
     }
 
     public void test002_Contacts() throws UiObjectNotFoundException {

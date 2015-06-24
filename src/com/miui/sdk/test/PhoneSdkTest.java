@@ -7,6 +7,7 @@ package com.miui.sdk.test;
  * Created at 2015--06-05 21:57
  */
 
+import android.os.RemoteException;
 import com.android.uiautomator.core.UiDevice;
 import com.android.uiautomator.core.UiObject;
 import com.android.uiautomator.core.UiObjectNotFoundException;
@@ -28,8 +29,13 @@ public class PhoneSdkTest extends UiAutomatorTestCase {
         super.setUp();
         if (uiDevice == null) {
             uiDevice = UiDevice.getInstance();
+            initPhone();
         }
+    }
+
+    private void initPhone() throws RemoteException, UiObjectNotFoundException {
         SdkUtils.unLock(uiDevice);
+        SdkUtils.clearOpenedApps(uiDevice);
     }
 
     public void test001_Camera() throws UiObjectNotFoundException {
@@ -192,18 +198,19 @@ public class PhoneSdkTest extends UiAutomatorTestCase {
         SdkUtils.debugMsg(String.format("methodName = %s", SdkUtils.getCurrentMethodName()));
         SdkUtils.launchApp(uiDevice, Constants.ACTIVITY_NAME_SOUND_RECORDER);
         if (uiDevice.getCurrentPackageName().equals(Constants.PACKAGE_NAME_SOUND_RECORDER)) {
+            SdkUtils.alertDialog(Constants.PACKAGE_NAME_SOUND_RECORDER, true);
             UiObject record;
             record = new UiObject(new UiSelector().className(""));
             record.click();
             Random random;
             random = new Random();
             int rnd;
-            UiObject stop, pause, markpoint;
+            UiObject stop, pause, markPoint;
             stop = new UiObject(new UiSelector().className(""));
             pause = new UiObject(new UiSelector().className(""));
-            markpoint = new UiObject(new UiSelector().className(""));
+            markPoint = new UiObject(new UiSelector().className(""));
             for (int i = 0; i < 3; i++) {
-                markpoint.click();
+                markPoint.click();
                 rnd = random.nextInt(2);
                 SdkUtils.waitFor(rnd);
             }
@@ -211,7 +218,6 @@ public class PhoneSdkTest extends UiAutomatorTestCase {
             SdkUtils.waitFor(1);
             stop.click();
             SdkUtils.waitFor(1);
-            SdkUtils.alertDialog(Constants.PACKAGE_NAME_SOUND_RECORDER, true);
         }
     }
 
