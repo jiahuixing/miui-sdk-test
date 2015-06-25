@@ -152,7 +152,7 @@ public class PhoneSdkTest extends UiAutomatorTestCase {
                     break;
                 }
             }
-            SdkUtils.immersionMenu();
+            SdkUtils.immersionMenu(Constants.PACKAGE_NAME_UPDATER);
             UiObject closeImmersionMenu;
             closeImmersionMenu = new UiObject(new UiSelector().className(""));
             closeImmersionMenu.click();
@@ -245,7 +245,7 @@ public class PhoneSdkTest extends UiAutomatorTestCase {
             }
             uiDevice.pressBack();
             SdkUtils.waitFor(1);
-            SdkUtils.immersionMenu();
+            SdkUtils.immersionMenu(Constants.PACKAGE_NAME_FM_RADIO);
             UiObject quit;
             quit = new UiObject(new UiSelector().className(""));
             quit.click();
@@ -305,7 +305,7 @@ public class PhoneSdkTest extends UiAutomatorTestCase {
             cancel = new UiObject(new UiSelector().className(""));
             cancel.click();
             SdkUtils.waitFor(1);
-            SdkUtils.immersionMenu();
+            SdkUtils.immersionMenu(Constants.PACKAGE_NAME_FILE_EXPLORER);
             UiObject closeImmersionMenu;
             closeImmersionMenu = new UiObject(new UiSelector().className(""));
             closeImmersionMenu.click();
@@ -505,7 +505,7 @@ public class PhoneSdkTest extends UiAutomatorTestCase {
         SdkUtils.debugMsg(String.format("methodName = %s", SdkUtils.getCurrentMethodName()));
         SdkUtils.launchApp(uiDevice, Constants.ACTIVITY_NAME_WEATHER);
         if (uiDevice.getCurrentPackageName().equals(Constants.PACKAGE_NAME_WEATHER)) {
-            SdkUtils.immersionMenu();
+            SdkUtils.immersionMenu(Constants.PACKAGE_NAME_WEATHER);
         }
     }
 
